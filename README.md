@@ -1,22 +1,23 @@
 # setup
-npm init
-npm i electron --save-dev -verbose
-npm i electron-packager --save-dev
-npm i mysql -save
-npm i iconv-lite -save
+-npm init
+-npm i electron --save-dev -verbose
+-npm i electron-packager --save-dev
+-npm i mysql -save
+-npm i iconv-lite -save
 
 # build and installers
 http://ourcodeworld.com/articles/read/365/how-to-create-a-windows-installer-for-an-application-built-with-electron-framework
-npm install electron-winstaller
-npm install electron-squirrel-startup
-# install package cmd
-node build.js
+-npm install electron-winstaller
+-npm install electron-squirrel-startup
+
+install package cmd
+-node build.js
 
 
 # some script
-npm run-script start
-npm run-script build
-npm run-script release
+-npm run-script start
+-npm run-script build
+-npm run-script release
 
 
 
@@ -27,14 +28,14 @@ npm run-script release
 
 
 # intro
-client是我们要编写的应用代码，纯前端，只要写html， js， css即可
-node_modules是node的库文件，一般不用管
-build.js是用来打包成安装文件用的执行脚本
-main.js是工程的主入口
-package.json是工程的描述文件
------
-build编译出的可执行文件
-installers打包出来安装文件所在目录
+-client是我们要编写的应用代码，纯前端，只要写html， js， css即可
+-node_modules是node的库文件，一般不用管
+-build.js是用来打包成安装文件用的执行脚本
+-main.js是工程的主入口
+-package.json是工程的描述文件
+
+-build编译出的可执行文件
+-installers打包出来安装文件所在目录
 
 
 
@@ -58,13 +59,12 @@ https://blog.jetbrains.com/webstorm/2016/05/getting-started-with-electron-in-web
     Port: 9222
 3. choose node.js 'main' to run or debug
 (in debug mode you can breakpoint in main process but not for renders)
-
 4. when you run or debug the app. You can press Ctrl+Shift+I to open the developer tools and debugging.
 
 
 # debugging in vscode
 添加一个 .vscode/launch.json 文件并使用以下配置：
-{
+`{
     "version": "0.2.0",
     "configurations": [
       {
@@ -79,4 +79,4 @@ https://blog.jetbrains.com/webstorm/2016/05/getting-started-with-electron-in-web
         "args" : ["."]
       }
     ]
-  }
+  }`

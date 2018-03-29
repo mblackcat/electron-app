@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>electron app</title>
+    <link rel="stylesheet" href="static/css/uikit/uikit.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body ng-app="App" ng-controller="AppCtrl">
+<header class="dragable header">
+    <h3 class="uk-margin-small-left left">electron app</h3>
+    <div class="right">
+        <div class="uk-display-inline-block uk-button-group uk-margin-right">
+            <a class="uk-button uk-button-large btn undragable" href="#"><span uk-icon="user"></span></a>
+            <a class="uk-button uk-button-large btn undragable" href="#config-modal" uk-toggle><span uk-icon="cog"></span></a>
+        </div>
+        <div class="uk-display-inline uk-button-group">
+            <button class="uk-button uk-button-large btn minimize undragable"
+                    ng-click="ipc.minimize_main_window()"><span uk-icon="minus"></span></button>
+            <button class="uk-button uk-button-large btn maximize undragable"
+                    ng-click="ipc.maximize_main_window()" ng-if="toggle_maximize_btn"><span uk-icon="expand"></span></button>
+            <button class="uk-button uk-button-large btn restore undragable"
+                    ng-click="ipc.restore_main_window()" ng-if="!toggle_maximize_btn"><span uk-icon="shrink"></span></button>
+            <button class="uk-button uk-button-large btn-danger undragable"
+                    ng-click="ipc.close_main_window()"><span uk-icon="close"></span></button>
+        </div>
+    </div>
+</header>
+<div class="uk-grid uk-grid-medium p-20 main">
+    <div class="uk-text-center">
+        <h2>Hello world, welcome to use electron!</h2>
+    </div>
+
+    <div id="config-modal" uk-modal>
+        <div class="uk-modal-dialog">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title"><span uk-icon="cog"></span> Config</h2>
+            </div>
+            <div class="uk-modal-body uk-overflow-container">
+                <form class="uk-form-stacked">
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="form-stacked-text">Text</label>
+                        <div class="uk-form-controls">
+                            <input class="uk-input" id="form-stacked-text" type="text" placeholder="Some text...">
+                        </div>
+                    </div>
+                
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="form-stacked-select">Select</label>
+                        <div class="uk-form-controls">
+                            <select class="uk-select" id="form-stacked-select">
+                                <option>Option 01</option>
+                                <option>Option 02</option>
+                            </select>
+                        </div>
+                    </div>
+                
+                    <div class="uk-margin">
+                        <div class="uk-form-label">Radio</div>
+                        <div class="uk-form-controls">
+                            <label><input class="uk-radio" type="radio" name="radio1"> Option 01</label><br>
+                            <label><input class="uk-radio" type="radio" name="radio1"> Option 02</label>
+                        </div>
+                    </div>
+                
+                </form>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button class="uk-button uk-button-primary" type="button" ng-click="config.save()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="block" ng-show="loading"><div uk-spinner></div></div>
+</div>
+<footer>
+    <div class="uk-text-center">design by joey</div>
+</footer>
+
+<!-- Insert this line above script imports  -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+<!-- normal script imports etc  -->
+<script type="text/javascript" src="static/js/vendor/jquery/jquery-2.2.3.min.js"></script>
+<script type="text/javascript" src="static/js/vendor/angular/angular.min.js"></script>
+
+<script type="text/javascript" src="static/js/uikit/uikit.min.js"></script>
+<script type="text/javascript" src="static/js/uikit/uikit-icons.min.js"></script>
+
+<script type="text/javascript" src="static/js/index.js"></script>
+</body>
+</html>

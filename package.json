@@ -1,0 +1,23 @@
+{
+  "name": "electron-app",
+  "version": "1.0.0",
+  "description": "simple app by electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager .",
+    "release win": "electron-packager . --platform=win32 --arch=x64 --icon=./client/static/images/favicon.ico --overwrite"
+  },
+  "author": "joey",
+  "license": "",
+  "devDependencies": {
+    "electron": "^1.6.11",
+    "electron-packager": "^8.7.2",
+    "electron-prebuilt": "^1.4.13"
+  },
+  "dependencies": {
+    "electron": "^1.6.11",
+    "iconv-lite": "^0.4.18",
+    "mysql": "^2.13.0"
+  }
+}
