@@ -38,7 +38,7 @@ npm run-script release
 + build编译出的可执行文件
 + installers打包出来安装文件所在目录
 
-## dev rules
+## dev rules
 1. 大家自己的子功能页面,直接在client目录下新建html做，如果一个子动能有多个页面，命名规则 appname_funcname.html，如果只有一个就直接appname.html即可；
 2. 对应用到的js都放在static/js目录下，命名规则和页面对应，appname_funcname.js，只有一个的话同上，直接appname.js
 3. 所有用到的css都直接写到style.css，方便所有页面都缓存，减少资源请求。
