@@ -22,7 +22,7 @@
     "prepack": "check-for-leaks",
     "prepush": "check-for-leaks"
   },
-  "repository": "https://github.com/mblackcat/electron-app",
+  "repository": "https://github.com/mblackcat/electron-app.git",
   "keywords": [
     "Electron",
     "App",
