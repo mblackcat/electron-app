@@ -1,81 +1,53 @@
-# setup
+# <img src="https://cloud.githubusercontent.com/assets/378023/15172388/b2b81950-1790-11e6-9a7c-ccc39912bb3a.png" width="60px" align="center" alt="Electron App icon"> Electron App
+
+[![Build Status](https://travis-ci.org/electron/electron-app.svg?branch=master)](https://travis-ci.org/electron/electron-app)
+[![JavaScript Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com)
+
+This is a desktop app that interactively and with sample code demonstrates core features of the [Electron](http://electronjs.org) API. It's built with Electron, too, of course. This app works on Windows, macOS and Linux operating systems.
+
+Use this app to see what you can do with Electron and use the source code to learn how to create a basic Electron app.
+
+![Electron App Screenshots](https://cloud.githubusercontent.com/assets/378023/15016148/ae06cc80-124a-11e6-80dd-076d83e492f6.png)
+
+---
+
+This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDUCT.md).
+By participating, you are expected to uphold this code. Please report unacceptable
+behavior to [coc@electronjs.org](mailto:coc@electronjs.org).
+
+Follow [@ElectronJS](https://twitter.com/electronjs) on Twitter for important
+announcements. Visit the [electron website](http://electronjs.org).
+
+## Using
+
+You can [download the latest release](https://github.com/electron/electron-app/releases) for your operating system or build it yourself (see below).
+
+## Building
+
+You'll need [Node.js](https://nodejs.org) installed on your computer in order to build this app.
+
+```bash
+$ git clone https://github.com/electron/electron-app
+$ cd electron-app
+$ npm install
+$ npm start
 ```
-npm init
-npm i electron --save-dev -verbose
-npm i electron-packager --save-dev
-npm i mysql -save
-npm i iconv-lite -save
+
+If you don't wish to clone, you can [download the source code](https://github.com/electron/electron-app/archive/master.zip).
+
+For easier developing you can launch the app in fullscreen with DevTools open:
+
+```bash
+$ npm run dev
 ```
 
-## build and installers
-http://ourcodeworld.com/articles/read/365/how-to-create-a-windows-installer-for-an-application-built-with-electron-framework
-```
-npm install electron-winstaller
-npm install electron-squirrel-startup
+## Extending
 
-\\ install package cmd
-node build.js
-```
+ [Read the docs](docs.md) to learn more about how this app is built or how to [add a new demo](docs.md#add-a-section-or-demo).
 
-## some script
-```
-npm run-script start
-npm run-script build
-npm run-script release
-```
+## Translations
 
-# guide
-1. 先安装nodejs，https://nodejs.org/en/，下载稳定版并安装
-2. cmd切换到工程根目录，然后执行 npm install 
-3. 在工程根目录，执行npm start启动应用
+* Simplified Chinese translation of this app is available at [`demopark/electron-app-Zh_CN`](https://github.com/demopark/electron-app-Zh_CN).
+* Traditional Chinese translation of this app is available at [`CalvertYang/electron-app-zh-Hant`](https://github.com/CalvertYang/electron-app-zh-Hant).
 
-## dev intro
-- client是我们要编写的应用代码
-- build.js是用来打包成安装文件用的执行脚本
-- main.js是工程的主入口
-- package.json是工程的描述文件
-
-+ build编译出的可执行文件
-+ installers打包出来安装文件所在目录
-
-## dev rules
-1. 大家自己的子功能页面,直接在client目录下新建html做，如果一个子动能有多个页面，命名规则 appname_funcname.html，如果只有一个就直接appname.html即可；
-2. 对应用到的js都放在static/js目录下，命名规则和页面对应，appname_funcname.js，只有一个的话同上，直接appname.js
-3. 所有用到的css都直接写到style.css，方便所有页面都缓存，减少资源请求。
-
-## debugging 
-### by webstorm
-https://blog.jetbrains.com/webstorm/2016/05/getting-started-with-electron-in-webstorm/
-1. new a run/debug configurations and new node.js for the app main process with:<br/>
-    Name: main (or other you want to)<br/>
-    Node interpreter: ./node_modules/.bin/electron.cmd<br/>
-    JavaScript file: main.js<br/>
-    Application parameters: --remote-debugging-port=9222
-2. new Chromium Remote for the app render with:<br/>
-    Host: localhost<br/>
-    Port: 9222
-3. choose node.js 'main' to run or debug<br/>
-(in debug mode you can breakpoint in main process but not for renders)
-4. when you run or debug the app. You can press Ctrl+Shift+I to open the developer tools and debugging.
-
-
-### by vscode
-添加一个 .vscode/launch.json 文件并使用以下配置：
-```
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Debug Main Process",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-      "windows": {
-        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
-      },
-      "args" : ["."]
-    }
-  ]
-}
-```
+Note: these versions are maintained by outside contributors and may not always be in sync with this version.

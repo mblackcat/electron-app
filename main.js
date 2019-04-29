@@ -1,267 +1,93 @@
-const electron = require('electron');
-const app = electron.app;
-const globalShortcut = electron.globalShortcut;
-const Tray = electron.Tray;
-const Menu = electron.Menu;
-const session = electron.session;
+require('update-electron-app')({
+  logger: require('electron-log')
+})
 
-// this should be placed at top of main.js to handle setup events quickly
-if (handleSquirrelEvent(app)) {
-    // squirrel event handled and app will exit in 1000ms, so don't do anything else
-    return;
-}
+const path = require('path')
+const glob = require('glob')
+const {app, BrowserWindow} = require('electron')
 
-const path = require('path');
-const url = require('url');
-const mysql = require('mysql');
-const exec = require('child_process').exec;
-var iconv = require('iconv-lite');
-var encoding = 'cp936';
-var binaryEncoding = 'binary';
+const debug = /--debug/.test(process.argv[2])
 
-const BrowserWindow = electron.BrowserWindow;
-const DEBUG = true;
+if (process.mas) app.setName('Electron App')
 
-var mainWindow;
-app.on('ready', function () {
-    handleMainWindow();
-});
+let mainWindow = null
 
-global.sharedObject = {
-    DEBUG: DEBUG,
-    host: DEBUG ? 'http://127.0.0.1:8000' : 'http://127.0.0.1',
-    login: false,
-    csrftoken: undefined,
-    sessionid: undefined,
-    mysql_config:{
-        host: '127.0.0.1',
-        user: 'root',
-        password: 'root',
-        database: 'electron'
-    },    
-    TMP_DIR: path.join(__dirname, 'client', 'tmp'),
-    BASE_DIR: __dirname
-};
+function initialize () {
+  makeSingleInstance()
 
-const ipcMain = electron.ipcMain;
-const dialog = electron.dialog;
+  loadDemos()
 
-ipcMain.on('close-main-window', function () {
-    app.quit();
-});
-ipcMain.on('maximize-main-window', function () {
-    mainWindow.maximize();
-});
-ipcMain.on('restore-main-window', function () {
-    mainWindow.restore();
-});
-ipcMain.on('minimize-main-window', function () {
-    mainWindow.minimize();
-});
+  function createWindow () {
+    const windowOptions = {
+      width: 1080,
+      minWidth: 680,
+      height: 840,
+      title: app.getName(),
+      webPreferences: {
+        nodeIntegration: true
+      }
+    }
 
-ipcMain.on('open-directory-dialog', function (event, args) {
-    dialog.showOpenDialog({
-        properties: ['openDirectory']
-    }, function (directory) {
-        if (directory) {
-            event.sender.send('selected-directory', {directory: directory, args:args});
-        }
+    if (process.platform === 'linux') {
+      windowOptions.icon = path.join(__dirname, '/assets/app-icon/png/512.png')
+    }
+
+    mainWindow = new BrowserWindow(windowOptions)
+    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+
+    // Launch fullscreen with DevTools open, usage: npm run debug
+    if (debug) {
+      mainWindow.webContents.openDevTools()
+      mainWindow.maximize()
+      require('devtron').install()
+    }
+
+    mainWindow.on('closed', () => {
+      mainWindow = null
     })
-});
-ipcMain.on('open-file-dialog', function (event, args) {
-    dialog.showOpenDialog({
-        properties: ['openFile']
-    }, function (files) {
-        if (files) {
-            event.sender.send('selected-file', {files: files, args:args});
-        }
-    })
-});
-ipcMain.on('save-file-dialog', function (event, args) {
-    dialog.showSaveDialog(args?args:{}, function (filename) {
-        if (filename) {
-            event.sender.send('saved-file', {filename: filename, args:args});
-        }
-    })
-});
-ipcMain.on('get-mysql-data', function (event, args) {
-    var connection = mysql.createConnection(global.sharedObject.mysql_config);
-    connection.connect(function (error) {
-        if (error) {
-            connection.end();
-            console.error(error);
-            event.returnValue = error;
-        } else {
-            if (!args) {
-                connection.end();
-                event.returnValue = 'no query exec';
-            } else {
-                connection.query(args, function (error, data) {
-                    if (error) {
-                        console.error(error);
-                        event.returnValue = error;
-                    } else {
-                        event.returnValue = data;
-                    }
-                    connection.end();
-                })
-            }
-        }
-    });
-});
-ipcMain.on('exec', function (event, args) {
-    if(!args){
-        event.sender.send('no command exec');
-    }else{
-        exec(args, { encoding: binaryEncoding }, function(error, std_out, std_err){
-            std_out = iconv.decode(new Buffer(std_out, binaryEncoding), encoding);
-            std_err = iconv.decode(new Buffer(std_err, binaryEncoding),encoding);
-            if(error){
-                console.error(error, std_err);
-                event.returnValue = std_err;
-            }else {
-                event.returnValue = std_out;
-            }
-        });
+  }
+
+  app.on('ready', () => {
+    createWindow()
+  })
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
     }
-});
-ipcMain.on('exec-with-exit-code', function (event, args) {
-    if(!args){
-        event.sender.send('no command exec');
-    }else{
-        exec(args, { encoding: binaryEncoding }, function(error, std_out, std_err){
-            iconv.decode(new Buffer(std_out, binaryEncoding), encoding), iconv.decode(new Buffer(std_err, binaryEncoding), encoding);
-            if(error){
-                console.error(error, std_err);
-            }else {
-                console.log(std_out);
-            }
-        }).on('exit', function (code) {
-            event.returnValue = code;
-        });
+  })
+
+  app.on('activate', () => {
+    if (mainWindow === null) {
+      createWindow()
     }
-});
-
-function handleMainWindow() {
-    mainWindow = new BrowserWindow({
-        width: 1024,
-        height: 768,
-        minWidth: 640,
-        minHeight: 480,
-        title: 'electron app',
-        frame: false
-    });
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'client', 'index.html'),
-        protocol: 'file',
-        slashes: true
-    }));
-
-    mainWindow.on('close', function () {
-        mainWindow = null;
-    }, false);
-
-    if(DEBUG){
-        mainWindow.openDevTools();
-    }
-
+  })
 }
 
-function handleGlobalShortcut() {
-    globalShortcut.register('CommandOrControl+Alt+R', function () {
-        if(mainWindow){
-            mainWindow.show();
-        }
-    })
-}
+// Make this app a single instance app.
+//
+// The main window will be restored and focused instead of a second window
+// opened when a person attempts to launch a second instance.
+//
+// Returns true if the current version of the app should quit instead of
+// launching.
+function makeSingleInstance () {
+  if (process.mas) return
 
-function handleTray() {
-    var appIcon = new Tray(path.join(__dirname, 'client', 'static', 'images', 'favicon.ico'));
-    const contextMenu = Menu.buildFromTemplate([{
-        label: 'electron app',
-        click: function() {
-            if(mainWindow){
-                mainWindow.show();
-            }
-        }
-    }, {
-        label: 'exit',
-        click: function() {
-            if(mainWindow){
-                mainWindow = null;
-            }
-        }
-    }]);
-    appIcon.setToolTip('electron app');
-    appIcon.setContextMenu(contextMenu);
-    appIcon.on('click', function () {
-        if(searchBarWindow){
-            searchBarWindow.show();
-        }
-    });
-}
+  app.requestSingleInstanceLock()
 
-function handleSquirrelEvent(application) {
-    if (process.argv.length === 1) {
-        return false;
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
     }
-
-    const ChildProcess = require('child_process');
-    const path = require('path');
-
-    const appFolder = path.resolve(process.execPath, '..');
-    const rootAtomFolder = path.resolve(appFolder, '..');
-    const updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
-    const exeName = path.basename(process.execPath);
-
-    const spawn = function (command, args) {
-        var spawnedProcess, error;
-
-        try {
-            spawnedProcess = ChildProcess.spawn(command, args, {
-                detached: true
-            });
-        } catch (error) {
-        }
-
-        return spawnedProcess;
-    };
-
-    const spawnUpdate = function (args) {
-        return spawn(updateDotExe, args);
-    };
-
-    const squirrelEvent = process.argv[1];
-    switch (squirrelEvent) {
-        case '--squirrel-install':
-        case '--squirrel-updated':
-            // Optionally do things such as:
-            // - Add your .exe to the PATH
-            // - Write to the registry for things like file associations and
-            //   explorer context menus
-
-            // Install desktop and start menu shortcuts
-            spawnUpdate(['--createShortcut', exeName]);
-
-            setTimeout(application.quit, 1000);
-            return true;
-
-        case '--squirrel-uninstall':
-            // Undo anything you did in the --squirrel-install and
-            // --squirrel-updated handlers
-
-            // Remove desktop and start menu shortcuts
-            spawnUpdate(['--removeShortcut', exeName]);
-
-            setTimeout(application.quit, 1000);
-            return true;
-
-        case '--squirrel-obsolete':
-            // This is called on the outgoing version of your app before
-            // we update to the new version - it's the opposite of
-            // --squirrel-updated
-
-            application.quit();
-            return true;
-    }
+  })
 }
+
+// Require each JS file in the main-process dir
+function loadDemos () {
+  const files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
+  files.forEach((file) => { require(file) })
+}
+
+initialize()
