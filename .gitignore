@@ -1,3 +1,7 @@
+.idea
 node_modules
 .vscode
 .DS_Store
+out
+tmp
+npm-debug.log

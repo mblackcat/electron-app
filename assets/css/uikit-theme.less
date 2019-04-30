@@ -1,0 +1,123 @@
+@base-font-family: 'Candara', "Microsoft YaHei", "NotoSansHans-Light", sans-serif;
+:root {
+  --color-0: black; /* Fallback */
+  --color-11: hsl(0, 0%, 11%);
+  --color-22: hsl(0, 0%, 22%);
+  --color-44: hsl(0, 0%, 44%);
+  --color-88: hsl(0, 0%, 88%);
+  --color-96: hsl(0, 0%, 96%);
+  --color-100: white;
+
+  --color-dark: #1e2225;
+  --color-second: #f2f5f6;
+
+  --color-theme: #67a38a;
+  --color-theme-hover: #4b8169;
+  --color-theme-active: #437961;
+  --color-theme-focus: #437961;
+  --color-theme-lighter: #7bbaa0;
+}
+
+//color
+a,
+.uk-link {
+  color: var(--color-theme);
+}
+a:hover,
+.uk-link:hover {
+  color: var(--color-theme-hover);
+}
+
+a.uk-link-heading:hover,
+.uk-link-heading a:hover {
+  color: var(--color-theme);
+}
+
+.uk-input:focus,
+.uk-select:focus,
+.uk-textarea:focus {
+  border-color: var(--color-theme);
+}
+.uk-radio:focus,
+.uk-checkbox:focus {
+  border-color: var(--color-theme);
+}
+.uk-radio:checked,
+.uk-checkbox:checked,
+.uk-checkbox:indeterminate {
+  background-color: var(--color-theme);
+}
+.uk-radio:checked:focus,
+.uk-checkbox:checked:focus,
+.uk-checkbox:indeterminate:focus {
+  background-color: var(--color-theme-focus);
+}
+
+.uk-button-link {
+  /* 1 */
+  padding: 0;
+  line-height: 1.5;
+  background: none;
+  /* 2 */
+  color: var(--color-theme);
+}
+/* Hover + Focus */
+.uk-button-link:hover,
+.uk-button-link:focus {
+  color: var(--color-theme-hover);
+  text-decoration: underline;
+}
+
+.uk-badge {
+  background: var(--color-theme);
+}
+.uk-label {
+  background: var(--color-theme);
+}
+
+.uk-subnav-pill > .uk-active > a {
+  background-color: var(--color-theme);
+}
+
+.uk-tab > .uk-active > a {
+  border-color: var(--color-theme);
+}
+
+.uk-progress::-webkit-progress-value {
+  background-color: var(--color-theme);
+}
+.uk-progress::-moz-progress-bar {
+  background-color: var(--color-theme);
+}
+.uk-progress::-ms-fill {
+  background-color: var(--color-theme);
+}
+
+.uk-text-background {
+  color: var(--color-theme) !important;
+}
+@supports (-webkit-background-clip: text) {
+  .uk-text-background {
+    background-color: var(--color-theme);
+  }
+}
+
+::selection {
+  background-color: var(--color-theme) !important;
+}
+
+[class*="primary"] {
+  background-color: var(--color-theme);
+}
+[class*="primary"]:hover {
+  background-color: var(--color-theme-hover);
+}
+[class*="primary"]:active {
+  background-color: var(--color-theme-active);
+}
+
+
+//text
+.uk-table th {
+  text-transform: none;
+}

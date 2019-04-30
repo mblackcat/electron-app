@@ -19,7 +19,7 @@ function getInstallerConfig () {
   return Promise.resolve({
     appDirectory: path.join(outPath, 'Electron App-win32-ia32'),
     exe: 'Electron App.exe',
-    iconUrl: path.join(rootPath, 'assets', 'app-icon', 'win', 'app.ico'),
+    iconUrl: path.join(rootPath, 'assets', 'app-icon', 'win', 'app256.ico'),
     loadingGif: path.join(rootPath, 'assets', 'img', 'loading.gif'),
     noMsi: true,
     outputDirectory: path.join(outPath, 'windows-installer'),

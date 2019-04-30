@@ -3,6 +3,7 @@
 // })
 
 const path = require('path')
+const fs = require('fs')
 const glob = require('glob')
 const {app, BrowserWindow} = require('electron')
 
@@ -15,13 +16,15 @@ let mainWindow = null
 function initialize () {
   makeSingleInstance()
 
-  loadDemos()
+  loadConfig()
+  loadApps()
 
   function createWindow () {
     const windowOptions = {
-      width: 1080,
-      minWidth: 680,
-      height: 840,
+      width: 1280,
+      minWidth: 1280,
+      height: 820,
+      minHeight: 820,
       title: app.getName(),
       webPreferences: {
         nodeIntegration: true
@@ -33,7 +36,9 @@ function initialize () {
     }
 
     mainWindow = new BrowserWindow(windowOptions)
-    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+    mainWindow.loadURL(path.join('file://', __dirname, 'sections', '/api-demo.html'))
+    // mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+    // mainWindow.setMenu(null)
 
     // Launch fullscreen with DevTools open, usage: npm run debug
     if (debug) {
@@ -84,8 +89,17 @@ function makeSingleInstance () {
   })
 }
 
+// load config
+function loadConfig () {
+  require(path.join(__dirname, 'main-process/config.js'))
+  let tmpDir = path.join(__dirname, 'tmp')
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir)
+  }
+  Object.assign(global.sharedObject, {TMP_DIR: path.join(__dirname, 'tmp'), BASE_DIR: __dirname})
+}
 // Require each JS file in the main-process dir
-function loadDemos () {
+function loadApps () {
   const files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
   files.forEach((file) => { require(file) })
 }
