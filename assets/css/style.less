@@ -108,7 +108,6 @@ body * {
     left: 0;
     bottom: 0;
     right: 0;
-    height: 60px;
 
     .side-button{
       padding: 15px;
@@ -127,10 +126,6 @@ body * {
   overflow-y: auto;
   color: var(--color-0);
   background-color: var(--color-second);
-
-  .hidden {
-    display: none;
-  }
 
   .item{
     position: absolute;
@@ -172,26 +167,23 @@ body * {
   color: var(--color-44);
   background-color: var(--color-100);
 
+  &.sub-side-hide {
+    left: 80px;
+  }
+
   .header {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 40px;
-    left: 0;
-    > .uk-active > a {
-      border-bottom-width: 8px;
-    }
+
   }
   .nav {
     position: absolute;
-    top: 40px;
+    top: 0;
     right: 0;
     height: 60px;
     left: 0;
   }
   .body {
     position: absolute;
-    top: 100px;
+    top: 60px;
     right: 0;
     bottom: 0;
     left: 0;
@@ -200,6 +192,19 @@ body * {
   }
 }
 
+.progress-in-navbar {
+  margin: 10px;
+  width: 150px;
+
+}
+
+.full-screen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
 .block {
   color: var(--color-100);
   background-color: var(--color-t60);

@@ -57,6 +57,7 @@
     "highlight.js": "^9.3.0",
     "iconv-lite": "^0.4.24",
     "jquery": "^3.4.0",
+    "less": "^3.9.0",
     "mysql": "^2.17.1",
     "uikit": "^3.1.4",
     "update-electron-app": "^1.1.1"

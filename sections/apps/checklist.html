@@ -1,0 +1,259 @@
+<template class="task-template">
+    <div ng-app="Checklist" ng-controller="ChecklistCtrl">
+        <div class="side">
+            <div class="item">
+                <button class="uk-button side-button" ng-click="set_cur_list($event, 'checklist')">
+                    Checklist
+                </button>
+                <button class="uk-button side-button" ng-click="set_cur_list($event, 'template')">
+                    Template
+                </button>
+            </div>
+
+            <footer>
+                <button class="uk-button side-button"
+                        uk-tooltip="config"
+                        ng-click="open_config()"><span uk-icon="icon: settings"></span></button>
+                <button class="uk-button side-button" ng-show="!sub_side_show"
+                        uk-tooltip="show"
+                        ng-click="sub_side_show=true"><span uk-icon="icon: chevron-right"></span></button>
+            </footer>
+        </div>
+
+        <div class="sub-side" ng-show="sub_side_show">
+            <header>
+                <form>
+                    <div class="uk-margin">
+                        <div class="uk-inline uk-width-1-1">
+                            <a class="uk-form-icon" href="#" uk-icon="icon: search"></a>
+                            <input class="uk-input" type="text" ng-model="search_keyword">
+                        </div>
+                    </div>
+                </form>
+            </header>
+
+            <ul class="uk-list uk-list-divider item">
+                <li ng-repeat="item in cur_item_list"
+                    ng-class="cur_item === item ? 'active' : ''"
+                    ng-click="set_cur_item($event, item)"
+                    ng-show="!!(search_keyword==''||item.name.match(search_keyword))">
+                    {{ item.name }}
+                </li>
+            </ul>
+
+            <footer class="uk-button-group uk-child-width-expand">
+                <button class="uk-button sub-side-button uk-button-primary"
+                        uk-tooltip="hide"
+                        ng-click="sub_side_show = false"><span uk-icon="icon: chevron-left"></span></button>
+                <button class="uk-button sub-side-button uk-button-primary"
+                        uk-tooltip="add one"
+                        ng-click="add_list()"><span uk-icon="icon: plus-circle"></span></button>
+                <button class="uk-button sub-side-button uk-button-primary"
+                        uk-tooltip="reset"
+                        ng-click="refresh()"><span uk-icon="icon: refresh"></span></button>
+            </footer>
+
+        </div>
+
+        <main class="main" ng-class="sub_side_show ? '' : 'sub-side-hide'">
+            <nav class="uk-navbar-container nav" uk-navbar>
+
+                <div class="uk-navbar-left">
+
+                    <ul class="uk-navbar-nav">
+                        <li><a href="#">Name</a></li>
+                        <li>
+                            <a href="#">Filter</a>
+                            <div class="uk-navbar-dropdown">
+                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                    <li><a href="#">By Author</a></li>
+                                    <li><a href="#">Unchecked</a></li>
+                                    <li><a href="#">Checked</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li><a href="#">Item</a></li>
+                    </ul>
+
+                </div>
+
+                <div class="uk-navbar-right">
+
+                    <div class="uk-navbar-item">
+                        <progress class="uk-progress progress-in-navbar" value="70" max="100"></progress>
+                    </div>
+
+                    <div class="uk-navbar-item">
+                        <form>
+                            <div class="">
+                                <div class="uk-inline">
+                                    <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+                                    <input class="uk-input" type="text">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+            </nav>
+
+            <div class="body">
+
+            </div>
+        </main>
+
+        <div class="full-screen block" ng-show="loading">
+            <div uk-spinner="ratio: 2"></div>
+        </div>
+
+        <div id="global-tips-modal" class="uk-flex-top" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+
+                <h4 class="uk-heading-divider" ng-bind="global_tips_header"></h4>
+
+                <div class="uk-modal-body">
+                    <p ng-bind-html="global_tips_body"></p>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="config-modal" class="uk-modal-container" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+
+                <h4 class="uk-heading-divider">Config</h4>
+
+                <div class="uk-modal-body uk-grid-small uk-padding-remove" uk-grid>
+                    <div class="uk-card uk-card-default uk-card-body uk-width-auto">
+                        <ul id="config-switcher-tab" class="uk-tab-left"
+                            uk-tab="connect: #config-switcher; animation: uk-animation-fade">
+                            <li><a href="#">System Config</a></li>
+                            <li><a href="#">User Config</a></li>
+                            <li><a href="#">Checklist Config</a></li>
+                            <li><a href="#">Template Config</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="uk-width-expand height-large" uk-overflow-auto>
+                        <ul id="config-switcher" class="uk-switcher">
+                            <li>
+                                <form class="uk-form-horizontal">
+
+                                    <div class="uk-card uk-card-default uk-card-body">
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">* key1</label>
+                                            <div class="uk-form-controls">
+                                                <input class="uk-input" ng-model="user_config.key1" type="text"
+                                                       placeholder="key1">
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-margin">
+                                            <div class="uk-form-label">key2</div>
+                                            <div class="uk-form-controls">
+                                                <label><input class="uk-checkbox" type="checkbox"
+                                                              ng-model="user_config.key2">
+                                                    yes</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </li>
+
+                            <li>
+                                <form class="uk-form-horizontal">
+
+                                    <div class="uk-card uk-card-default uk-card-body">
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">* key1</label>
+                                            <div class="uk-form-controls">
+                                                <input class="uk-input" ng-model="user_config.key1" type="text"
+                                                       placeholder="key1">
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-margin">
+                                            <div class="uk-form-label">key2</div>
+                                            <div class="uk-form-controls">
+                                                <label><input class="uk-checkbox" type="checkbox"
+                                                              ng-model="user_config.key2">
+                                                    yes</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </li>
+
+                            <li>
+                                <form class="uk-form-horizontal">
+
+                                    <div class="uk-card uk-card-default uk-card-body">
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">* key1</label>
+                                            <div class="uk-form-controls">
+                                                <input class="uk-input" ng-model="user_config.key1" type="text"
+                                                       placeholder="key1">
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-margin">
+                                            <div class="uk-form-label">key2</div>
+                                            <div class="uk-form-controls">
+                                                <label><input class="uk-checkbox" type="checkbox"
+                                                              ng-model="user_config.key2">
+                                                    yes</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </li>
+
+                            <li>
+                                <form class="uk-form-horizontal">
+
+                                    <div class="uk-card uk-card-default uk-card-body">
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">* key1</label>
+                                            <div class="uk-form-controls">
+                                                <input class="uk-input" ng-model="user_config.key1" type="text"
+                                                       placeholder="key1">
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-margin">
+                                            <div class="uk-form-label">key2</div>
+                                            <div class="uk-form-controls">
+                                                <label><input class="uk-checkbox" type="checkbox"
+                                                              ng-model="user_config.key2">
+                                                    yes</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="uk-modal-footer uk-text-right">
+                    <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                    <button class="uk-button uk-button-primary" type="button">Save</button>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            require('./renderer-process/app-checklist')
+        </script>
+    </div>
+</template>
