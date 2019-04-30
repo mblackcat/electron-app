@@ -3,7 +3,7 @@
     <header class="section-header">
       <div class="section-wrapper">
         <h1>
-          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-native-ui"></use></svg>
+          <svg class="section-icon"><use xlink:href="../assets/img/icons.svg#icon-native-ui"></use></svg>
           Use system dialogs
         </h1>
         <h3>The <code>dialog</code> module in Electron allows you to use native system dialogs for opening files or directories, saving a file or displaying informational messages.</h3>
@@ -111,10 +111,10 @@ ipc.on('open-file-dialog-sheet', function (event) {
     </div>
 
     <script type="text/javascript">
-      require('./renderer-process/native-ui/dialogs/open-file')
-      require('./renderer-process/native-ui/dialogs/error')
-      require('./renderer-process/native-ui/dialogs/information')
-      require('./renderer-process/native-ui/dialogs/save')
+      require('.renderer-process/native-ui/dialogs/open-file')
+      require('.renderer-process/native-ui/dialogs/error')
+      require('.renderer-process/native-ui/dialogs/information')
+      require('.renderer-process/native-ui/dialogs/save')
     </script>
 
   </section>

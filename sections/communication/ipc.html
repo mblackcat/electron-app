@@ -3,7 +3,7 @@
     <header class="communication">
       <div class="section-wrapper">
         <h1>
-          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-communication"></use></svg>
+          <svg class="section-icon"><use xlink:href="../assets/img/icons.svg#icon-communication"></use></svg>
           Communication between processes
         </h1>
         <h3>The <code>ipc</code> (inter-process communication) module allows you to send and receive synchronous and asynchronous messages between the main and renderer processes.</h3>
@@ -76,9 +76,9 @@
     </div>
 
     <script type="text/javascript">
-      require('./renderer-process/communication/sync-msg')
-      require('./renderer-process/communication/async-msg')
-      require('./renderer-process/communication/invisible-msg')
+      require('../../renderer-process/communication/sync-msg')
+      require('../../renderer-process/communication/async-msg')
+      require('../../renderer-process/communication/invisible-msg')
     </script>
 
   </section>
