@@ -16,8 +16,9 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
     $scope.user_info = undefined
     $scope.user_config = undefined
 
-    $scope.cur_item_list = undefined
-    $scope.cur_item = undefined
+    $scope.cur_tree_list = undefined
+    $scope.cur_tree = undefined
+    $scope.cur_tree_type = undefined
 
     $scope.search_keyword = ''
     $scope.loading = false
@@ -96,6 +97,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item1',
                 desc: 'desc1',
                 template_id: 1,
+                root_item_id: 2,
                 author: 'author1',
                 create_at: 'create_at1',
                 update_at: 'update_at1',
@@ -107,6 +109,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item2',
                 desc: 'desc2',
                 template_id: 2,
+                root_item_id: 2,
                 author: 'author2',
                 create_at: 'create_at2',
                 update_at: 'update_at2',
@@ -118,6 +121,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item3',
                 desc: 'desc3',
                 template_id: 3,
+                root_item_id: 2,
                 author: 'author3',
                 create_at: 'create_at3',
                 update_at: 'update_at3',
@@ -129,6 +133,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item4',
                 desc: 'desc4',
                 template_id: 4,
+                root_item_id: 2,
                 author: 'author4',
                 create_at: 'create_at4',
                 update_at: 'update_at4',
@@ -140,6 +145,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item5',
                 desc: 'desc5',
                 template_id: 1,
+                root_item_id: 2,
                 author: 'author5',
                 create_at: 'create_at5',
                 update_at: 'update_at5',
@@ -172,6 +178,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item1',
                 desc: 'desc1',
                 author: 'author1',
+                root_item_id: 1,
                 create_at: 'create_at1',
                 update_at: 'update_at1',
                 total_count: 0
@@ -181,6 +188,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item2',
                 desc: 'desc2',
                 author: 'author2',
+                root_item_id: 1,
                 create_at: 'create_at2',
                 update_at: 'update_at2',
                 total_count: 0
@@ -190,6 +198,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item3',
                 desc: 'desc3',
                 author: 'author3',
+                root_item_id: 1,
                 create_at: 'create_at3',
                 update_at: 'update_at3',
                 total_count: 0
@@ -199,6 +208,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
                 name: 'item4',
                 desc: 'desc4',
                 author: 'author4',
+                root_item_id: 1,
                 create_at: 'create_at4',
                 update_at: 'update_at4',
                 total_count: 0
@@ -222,24 +232,155 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         //   })
     }
 
-    $scope.set_cur_list = function (event, list) {
-        $scope.cur_list_type = list
-        $scope.cur_item_list = $scope.hasOwnProperty(list) ? $scope[list] : []
+    $scope.get_tree = function (rootItemId) {
+        // { id: 1, desc: 'check out this', checked: true, checked_by: 'John', checked_at: '90/1/21 12:20:10', appoint_to: '', children: []}
+        return [
+            {
+                id: 1,
+                desc: 'check out this',
+                checked: false,
+                checked_by: 'John',
+                checked_at: '90/1/21 12:20:10',
+                appoint_to: 'Tom',
+                children: [
+                    {
+                        id: 6,
+                        desc: 'check out this',
+                        checked: true,
+                        checked_by: 'John',
+                        checked_at: '90/1/21 12:20:10',
+                        appoint_to: 'Tom',
+                        children: []
+                    },
+                    {
+                        id: 7,
+                        desc: 'check out this',
+                        checked: false,
+                        checked_by: 'John',
+                        checked_at: '90/1/21 12:20:10',
+                        appoint_to: 'Tom',
+                        children: [
+                            {
+                                id: 8,
+                                desc: 'check out this',
+                                checked: true,
+                                checked_by: 'John',
+                                checked_at: '90/1/21 12:20:10',
+                                appoint_to: 'Tom',
+                                children: []
+                            },
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                desc: 'check out this check out this check out this check out this check out this check out this check out this',
+                checked: true,
+                checked_by: 'John',
+                checked_at: '90/1/21 12:20:10',
+                appoint_to: '',
+                children: []
+            },
+            {
+                id: 3,
+                desc: 'check out this',
+                checked: false,
+                checked_by: 'John',
+                checked_at: '90/1/21 12:20:10',
+                appoint_to: 'Tom',
+                children: []
+            },
+            {
+                id: 4,
+                desc: 'check out this',
+                checked: false,
+                checked_by: 'John',
+                checked_at: '90/1/21 12:20:10',
+                appoint_to: 'Tom',
+                children: []
+            },
+            {
+                id: 5,
+                desc: 'check out this',
+                checked: true,
+                checked_by: 'John',
+                checked_at: '90/1/21 12:20:10',
+                appoint_to: 'Tom',
+                children: [
+                    {
+                        id: 9,
+                        desc: 'check out this',
+                        checked: true,
+                        checked_by: 'John',
+                        checked_at: '90/1/21 12:20:10',
+                        appoint_to: 'Tom',
+                        children: []
+                    },
+                    {
+                        id: 10,
+                        desc: 'check out this',
+                        checked: false,
+                        checked_by: 'John',
+                        checked_at: '90/1/21 12:20:10',
+                        appoint_to: 'Tom',
+                        children: []
+                    },
+                    {
+                        id: 11,
+                        desc: 'check out this',
+                        checked: true,
+                        checked_by: 'John',
+                        checked_at: '90/1/21 12:20:10',
+                        appoint_to: 'Tom',
+                        children: []
+                    }
+                ]
+            }
+        ]
     }
 
-    $scope.set_cur_item = function (event, item) {
-        $scope.cur_item = item
+    $scope.set_cur_tree_list = function (event, treeType) {
+        $scope.cur_tree_type = treeType
+        $scope.cur_tree_list = $scope.hasOwnProperty(treeType) ? $scope[treeType] : []
     }
-    $scope.remove_item_confirm = function (event, item, index) {
+
+    $scope.set_cur_tree = function (event, tree) {
+        $scope.cur_tree = $scope.get_tree(tree.root_item_id)
+    }
+    $scope.calc_cur_tree_checked_percent = function () {
+        if ($scope.cur_tree === undefined) {
+            return 0
+        }
+        let count = 0
+        let total = 0
+
+        function loop_item(tree) {
+            let i, len, item
+            for (let i = 0, len = tree.length; i < len; i++) {
+                item = tree[i]
+                if (item.checked) {
+                    count += 1
+                }
+                loop_item(item.children)
+                total += 1
+            }
+        }
+
+        loop_item($scope.cur_tree)
+
+        return 100 * count / total
+    }
+    $scope.delete_tree_confirm = function (event, tree, index) {
         let $this = $(event.currentTarget)
         let label = $this.html()
-        if (item.id < 0) {
+        if (tree.id < 0) {
             index = index - $scope.item_list.length
-            $scope.new_item_list.splice(index, 1)
+            $scope.new_tree_list.splice(index, 1)
         } else {
             UIkit.modal.confirm('Remove Item Config Confirm!', {stack: true}).then(function () {
                 // $this.html('<div uk-spinner></div>').prop('disabled', 'disable')
-                // $http.post($scope.shared_object.host + '/api/remove_item', item)
+                // $http.post($scope.shared_object.host + '/api/remove_item', tree)
                 //   .then(function (response) {
                 //     let data = response.data
                 //     if (data.result) {
@@ -260,17 +401,18 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
             })
         }
     }
-    $scope.add_item = function () {
-        $scope.new_item_list.push({
+
+    $scope.add_tree = function () {
+        $scope.new_tree_list.push({
             id: -1,
             name: ''
         })
     }
-    $scope.save_add_item = function (event, item) {
+    $scope.save_add_tree = function (event, tree) {
         let $this = $(event.currentTarget)
         let label = $this.html()
         // $this.html('<div uk-spinner></div>').prop('disabled', 'disable')
-        // return $http.post($scope.shared_object.host + '/api/add_item', item)
+        // return $http.post($scope.shared_object.host + '/api/add_item', tree)
         //   .then(function (response) {
         //     let data = response.data
         //     if (data.result) {
@@ -286,11 +428,23 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         //     $this.html(label).removeAttr('disabled')
         //   })
     }
-
-    $scope.add_list = function () {
+    $scope.as_checklist = function (event, template) {
 
     }
-    $scope.refresh = function () {
+
+    $scope.toggle_checked = function (event, item) {
+        item.checked = !item.checked
+        if (item.checked) {
+            // update checked by and checked at
+            item.checked_by = 'joey'
+            item.checked_at = (new Date()).format("yy-MM-dd hh:mm:ss")
+        } else {
+            item.checked_by = ''
+            item.checked_at = ''
+        }
+    }
+
+    $scope.refresh_page = function () {
     }
 
     // util
@@ -324,6 +478,21 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         } else {
             UIkit.modal.alert(msg, {stack: true})
         }
+    }
+    Date.prototype.format = function (fmt) {
+        let o = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3),
+            "S": this.getMilliseconds()
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length))
+        for (let k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)))
+        return fmt
     }
 
     // init

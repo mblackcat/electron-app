@@ -37,8 +37,8 @@
 
             <ul class="uk-list uk-list-divider item">
                 <li ng-repeat="item in item_list"
-                    ng-class="cur_item === item ? 'active' : ''"
-                    ng-click="set_cur_item($event, item)"
+                    ng-class="cur_tree === item ? 'active' : ''"
+                    ng-click="set_cur_tree($event, item)"
                     ng-show="!!(search_keyword==''||item.name.match(search_keyword))">
                     {{ item.name }}
                 </li>
@@ -164,7 +164,7 @@
                             <li>
                                 <form class="uk-form-horizontal">
 
-                                    <div ng-repeat="item in item_list.concat(new_item_list) track by $index"
+                                    <div ng-repeat="item in item_list.concat(new_tree_list) track by $index"
                                          class="uk-card uk-card-default uk-card-body">
                                         <div class="uk-margin">
                                             <label class="uk-form-label">* name</label>
@@ -176,10 +176,10 @@
 
                                         <div class="uk-margin">
                                             <button class="uk-button uk-button-danger"
-                                                    ng-click="remove_item_confirm($event, item, $index)">Remove
+                                                    ng-click="remove_tree_confirm($event, item, $index)">Remove
                                             </button>
                                             <button class="uk-button uk-button-primary" ng-show="item.id===-1"
-                                                    ng-click="save_add_item($event, item)">Save
+                                                    ng-click="save_add_tree($event, item)">Save
                                             </button>
                                         </div>
 

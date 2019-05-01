@@ -2,10 +2,10 @@
     <div ng-app="Checklist" ng-controller="ChecklistCtrl">
         <div class="side">
             <div class="item">
-                <button class="uk-button side-button" ng-click="set_cur_list($event, 'checklist')">
+                <button class="uk-button side-button" ng-click="set_cur_tree_list($event, 'checklist')">
                     Checklist
                 </button>
-                <button class="uk-button side-button" ng-click="set_cur_list($event, 'template')">
+                <button class="uk-button side-button" ng-click="set_cur_tree_list($event, 'template')">
                     Template
                 </button>
             </div>
@@ -33,11 +33,18 @@
             </header>
 
             <ul class="uk-list uk-list-divider item">
-                <li ng-repeat="item in cur_item_list"
-                    ng-class="cur_item === item ? 'active' : ''"
-                    ng-click="set_cur_item($event, item)"
-                    ng-show="!!(search_keyword==''||item.name.match(search_keyword))">
-                    {{ item.name }}
+                <li ng-repeat="tree in cur_tree_list track by $index"
+                    ng-class="cur_tree === tree ? 'active' : ''"
+                    ng-click="set_cur_tree($event, tree)"
+                    ng-show="!!(search_keyword==''||tree.name.match(search_keyword))">
+                    {{ tree.name }}
+                    <ul class="uk-iconnav uk-float-right">
+                        <li uk-tooltip="delete"
+                            ng-click="delete_tree_confirm($event, tree, $index)"><a href="#" uk-icon="icon: minus-circle"></a></li>
+                        <li uk-tooltip="as checklist"
+                            ng-show="cur_tree_type==='template'"
+                            ng-click="as_checklist($event, tree)"><a href="#" uk-icon="icon: bolt"></a></li>
+                    </ul>
                 </li>
             </ul>
 
@@ -47,10 +54,10 @@
                         ng-click="sub_side_show = false"><span uk-icon="icon: chevron-left"></span></button>
                 <button class="uk-button sub-side-button uk-button-primary"
                         uk-tooltip="add one"
-                        ng-click="add_list()"><span uk-icon="icon: plus-circle"></span></button>
+                        ng-click="add_tree()"><span uk-icon="icon: plus-circle"></span></button>
                 <button class="uk-button sub-side-button uk-button-primary"
                         uk-tooltip="reset"
-                        ng-click="refresh()"><span uk-icon="icon: refresh"></span></button>
+                        ng-click="refresh_page()"><span uk-icon="icon: refresh"></span></button>
             </footer>
 
         </div>
@@ -80,7 +87,7 @@
                 <div class="uk-navbar-right">
 
                     <div class="uk-navbar-item">
-                        <progress class="uk-progress progress-in-navbar" value="70" max="100"></progress>
+                        <progress class="uk-progress progress-in-navbar" value="{{ calc_cur_tree_checked_percent() }}" max="100"></progress>
                     </div>
 
                     <div class="uk-navbar-item">
@@ -99,8 +106,30 @@
             </nav>
 
             <div class="body">
-
+                <ul class="uk-list uk-list-large list-hover">
+                    <li ng-repeat="item in cur_tree" ng-include="'treeItem'"></li>
+                </ul>
             </div>
+
+            <script type="text/ng-template" id="treeItem">
+                <div uk-grid>
+                    <div class="uk-width-expand">#{{item.id}} {{item.desc}}</div>
+                    <div class="uk-width-auto">
+                        <div class="uk-inline w-80" uk-tooltip="appoint to" ng-bind="item.appoint_to"></div>
+                        <div class="uk-inline w-30" ng-if="cur_tree_type==='checklist'">
+                            <a href="#" class="check-button"
+                               uk-icon="icon: check" ng-class="item.checked?'checked':''"
+                               ng-click="toggle_checked($event, item)"
+                            ></a>
+                        </div>
+                        <div class="uk-inline w-80" ng-if="cur_tree_type==='checklist'" uk-tooltip="checked by" ng-bind="item.checked_by"></div>
+                        <div class="uk-inline w-125 uk-text-meta" ng-if="cur_tree_type==='checklist'" uk-tooltip="checked at" ng-bind="item.checked_at"></div>
+                    </div>
+                </div>
+                <ul class="uk-list uk-list-large list-hover" ng-if="item.children && item.children.length > 0" >
+                    <li ng-repeat="item in item.children" ng-include="'treeItem'"></li>
+                </ul>
+            </script>
         </main>
 
         <div class="full-screen block" ng-show="loading">

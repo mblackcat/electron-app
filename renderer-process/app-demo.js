@@ -18,8 +18,8 @@ app.controller('DemoCtrl', function ($scope, $http, $sce, $timeout) {
 
   $scope.cur_feature = undefined
   $scope.new_feature_list = []
-  $scope.cur_item = undefined
-  $scope.new_item_list = []
+  $scope.cur_tree = undefined
+  $scope.new_tree_list = []
   $scope.search_keyword = ''
   $scope.main_data_loading = false
 
@@ -181,15 +181,15 @@ app.controller('DemoCtrl', function ($scope, $http, $sce, $timeout) {
     //   })
   }
 
-  $scope.set_cur_item = function (event, item) {
-    $scope.cur_item = item
+  $scope.set_cur_tree = function (event, item) {
+    $scope.cur_tree = item
   }
-  $scope.remove_item_confirm = function (event, item, index) {
+  $scope.remove_tree_confirm = function (event, item, index) {
     let $this = $(event.currentTarget)
     let label = $this.html()
     if (item.id < 0) {
       index = index - $scope.item_list.length
-      $scope.new_item_list.splice(index, 1)
+      $scope.new_tree_list.splice(index, 1)
     } else {
       UIkit.modal.confirm('Remove Item Config Confirm!', { stack: true }).then(function () {
         // $this.html('<div uk-spinner></div>').prop('disabled', 'disable')
@@ -215,12 +215,12 @@ app.controller('DemoCtrl', function ($scope, $http, $sce, $timeout) {
     }
   }
   $scope.add_item = function () {
-    $scope.new_item_list.push({
+    $scope.new_tree_list.push({
       id: -1,
       name: ''
     })
   }
-  $scope.save_add_item = function (event, item) {
+  $scope.save_add_tree = function (event, item) {
     let $this = $(event.currentTarget)
     let label = $this.html()
     // $this.html('<div uk-spinner></div>').prop('disabled', 'disable')
