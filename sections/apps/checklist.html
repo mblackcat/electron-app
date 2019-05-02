@@ -106,22 +106,39 @@
             </nav>
 
             <form class="body">
-                <ul class="uk-list uk-list-large list-hover">
+                <ul class="uk-list list-hover">
                     <li ng-repeat="item in cur_tree" ng-include="'treeItem'"></li>
                 </ul>
             </form>
 
             <script type="text/ng-template" id="treeItem">
-                <div uk-grid
-                     uk-toggle="target: #children-of-{{item.id}}; animation: uk-animation-slide-top-small"
-                     ng-shortcut="'tab|enter|f2|esc'"
-                     ng-shortcut-actions="new_item_next(item) | new_item_child(item) | editable_item_self(item) | dis_editable_item_self(item)">
+                <div class="uk-grid-small padding-mini" uk-grid>
+                    <div class="uk-width-auto">
+                        <div class="uk-inline">
+                            <a uk-icon="icon: menu" type="button"></a>
+                            <div class="menu-context" uk-dropdown="pos: right-bottom; mode: click">
+                                <ul class="uk-list">
+                                    <li><a href="#" ng-click="editable_item_self(item)">Enter Edit</a></li>
+                                    <li><a href="#" ng-click="dis_editable_item_self(item)">Esc Edit</a></li>
+                                    <li><a href="#" ng-click="new_item_next(item)">New Next</a></li>
+                                    <li><a href="#" ng-click="new_item_child(item)">New Child</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <span uk-icon="icon: plus-circle"
+                              ng-show="item.children && item.children.length >0 && !item.expand"
+                              ng-click="toggle_expand($event, item)"></span>
+                        <span uk-icon="icon: minus-circle"
+                              ng-show="item.children && item.children.length >0 && item.expand"
+                              ng-click="toggle_expand($event, item)"></span>
+                    </div>
                     <div class="uk-width-expand">
                         <div ng-show="!item.editable">#{{item.id}} {{item.desc}}</div>
                         <input class="uk-input" ng-show="item.editable" type="text" ng-model="item.desc">
                     </div>
                     <div class="uk-width-auto">
-                        <div class="uk-inline w-80" uk-tooltip="appoint to" ng-bind="item.appoint_to"></div>
+                        <div class="uk-inline w-80" ng-show="!item.editable" uk-tooltip="appoint to" ng-bind="item.appoint_to"></div>
+                        <input class="uk-input uk-inline w-80" ng-show="item.editable" type="text" uk-tooltip="appoint to" ng-model="item.appoint_to">
                         <div class="uk-inline w-30" ng-if="cur_tree_type==='checklist'">
                             <a href="#" class="check-button"
                                uk-icon="icon: check" ng-class="item.checked?'checked':''"
@@ -132,7 +149,7 @@
                         <div class="uk-inline w-125 uk-text-meta" ng-if="cur_tree_type==='checklist'" uk-tooltip="checked at" ng-bind="item.checked_at"></div>
                     </div>
                 </div>
-                <ul id="children-of-{{item.id}}" class="uk-list uk-list-large list-hover" ng-show="item.children && item.children.length > 0" >
+                <ul class="uk-list uk-list-large list-hover" ng-show="item.children && item.children.length > 0 && item.expand" >
                     <li ng-repeat="item in item.children" ng-include="'treeItem'"></li>
                 </ul>
             </script>
