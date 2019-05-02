@@ -1,6 +1,6 @@
 'use strict'
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-lets
 const {ipcRenderer, shell} = require('electron')
 const angular = require('angular')
 const $ = require('jquery')
@@ -25,6 +25,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   $scope.search_keyword = ''
   $scope.loading = false
   $scope.sub_side_show = true
+  $scope.gen_id = -1
 
   // modal
   $scope.global_tips_modal = UIkit.modal('#global-tips-modal', {stack: true})
@@ -237,7 +238,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   $scope.get_tree = function (rootItemId) {
     // { id: 1, desc: 'check out this', checked: true, checked_by: 'John', checked_at: '90/1/21 12:20:10', appoint_to: '', children: []}
 
-    let flatData = [
+    $scope.cur_tree_flat_data = [
       {
         id: 1,
         desc: 'check out this',
@@ -248,6 +249,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 0,
         order: 0,
         root_id: 1,
+        editable: false
       },
       {
         id: 6,
@@ -259,6 +261,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 1,
         order: 0,
         root_id: 1,
+        editable: false
       },
       {
         id: 2,
@@ -270,6 +273,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 0,
         order: 1,
         root_id: 1,
+        editable: false
       },
       {
         id: 4,
@@ -281,6 +285,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 0,
         order: 3,
         root_id: 1,
+        editable: false
       },
       {
         id: 3,
@@ -292,6 +297,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 0,
         order: 2,
         root_id: 1,
+        editable: false
       },
       {
         id: 7,
@@ -303,6 +309,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 1,
         order: 1,
         root_id: 1,
+        editable: false
       },
       {
         id: 8,
@@ -314,6 +321,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 7,
         order: 0,
         root_id: 1,
+        editable: false
       },
       {
         id: 5,
@@ -325,6 +333,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 0,
         order: 4,
         root_id: 1,
+        editable: false
       },
       {
         id: 10,
@@ -336,6 +345,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 5,
         order: 1,
         root_id: 1,
+        editable: false
       },
       {
         id: 9,
@@ -347,6 +357,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 5,
         order: 0,
         root_id: 1,
+        editable: false
       },
       {
         id: 11,
@@ -358,6 +369,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
         parent_id: 5,
         order: 2,
         root_id: 1,
+        editable: false
       },
     ]
 
@@ -466,12 +478,26 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
       },
     ]
 
-    return $scope.transform_2_tree(flatData)
+    return $scope.transform_2_tree($scope.cur_tree_flat_data)
   }
 
-  $scope.transform_2_tree = function (flat) {
+  $scope.transform_2_tree = function (flat, reset) {
     let nodes = {}
-    let tree = flat.filter(function (obj) {
+    let tree = flat
+    if (reset) {
+      tree = tree.map(function (obj) {
+        if (obj.hasOwnProperty('children')) {
+          delete obj.children
+        }
+        return obj
+      })
+    }
+    tree = tree.map(function (obj) {
+      if (obj.hasOwnProperty('children')) {
+        delete obj.children
+      }
+      return obj
+    }).filter(function (obj) {
       let id = obj.id
       let parentId = obj.parent_id
 
@@ -559,7 +585,6 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
       })
     }
   }
-
   $scope.add_tree = function () {
     $scope.new_tree_list.push({
       id: -1,
@@ -590,6 +615,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
 
   }
 
+  // tree
   $scope.toggle_checked = function (event, item) {
     item.checked = !item.checked
     if (item.checked) {
@@ -600,6 +626,47 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
       item.checked_by = ''
       item.checked_at = ''
     }
+  }
+  $scope.new_item_next = function (item) {
+    $scope.gen_id -= 1
+    $scope.cur_tree_flat_data.push({
+      id: $scope.gen_id,
+      desc: '',
+      checked: false,
+      checked_by: '',
+      checked_at: '',
+      appoint_to: '',
+      parent_id: item.parent_id,
+      order: item.order + 1,
+      root_id: item.root_id,
+      editable: true
+    })
+    $scope.cur_tree = $scope.transform_2_tree($scope.cur_tree_flat_data, true)
+  }
+  $scope.new_item_child = function (item) {
+    $scope.gen_id -= 1
+    $scope.cur_tree_flat_data.push({
+      id: $scope.gen_id,
+      desc: '',
+      checked: false,
+      checked_by: '',
+      checked_at: '',
+      appoint_to: '',
+      parent_id: item.id,
+      order: item.children.length,
+      root_id: item.root_id,
+      editable: true
+    })
+    $scope.cur_tree = $scope.transform_2_tree($scope.cur_tree_flat_data, true)
+  }
+  $scope.editable_item_self = function (item) {
+    item.editable = true
+  }
+  $scope.dis_editable_item_self = function (item) {
+    item.editable = false
+  }
+  $scope.focus_item = function (item) {
+
   }
 
   $scope.refresh_page = function () {
@@ -659,3 +726,236 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   // init
   $scope.init()
 })
+
+app.factory('shortcuts', [
+  '$document',
+  function ($document) {
+    let shortcuts = []
+
+    let charKeyCodes = {
+      'delete': 8,
+      'tab': 9,
+      'enter': 13,
+      'return': 13,
+      'esc': 27,
+      'space': 32,
+      'left': 37,
+      'up': 38,
+      'right': 39,
+      'down': 40,
+      ';': 186,
+      '=': 187,
+      ',': 188,
+      '-': 189,
+      '.': 190,
+      '/': 191,
+      '`': 192,
+      '[': 219,
+      '\\': 220,
+      ']': 221,
+      '\'': 222,
+    }
+
+    let inOrder = function (keys, initial) {
+      let len = keys.length
+      for (let i = 0; i < len; i++) {
+        charKeyCodes[keys[i]] = initial + i
+      }
+    }
+
+    inOrder('1234567890', 49)
+    inOrder('abcdefghijklmnopqrstuvwxyz', 65)
+
+    let keyCodeChars = {}
+    _.forEach(charKeyCodes, function (keyCode, character) {
+      keyCodeChars[keyCode] = character
+    })
+
+    let modifierKeys = {
+      'shift': 'shift',
+      'ctrl': 'ctrl',
+      'meta': 'meta',
+      'alt': 'alt',
+    }
+
+    let parseKeySet = function (keySet) {
+      let names = keySet.split('+')
+      let keys = {}
+
+      // Default modifiers to unset.
+      _.forEach(modifierKeys, function (name) {
+        keys[name] = false
+      })
+
+      _.forEach(names, function (name) {
+        let modifierKey = modifierKeys[name]
+        if (modifierKey) {
+          keys[modifierKey] = true
+        } else {
+          keys.keyCode = charKeyCodes[name]
+
+          // In case someone tries for a weird key.
+          if (!keys.keyCode) {
+            return
+          }
+        }
+      })
+
+      return keys
+    }
+
+    let overwriteWithout = function (arr, item) {
+      for (let i = arr.length; i >= 0; i--) {
+        if (arr[i] === item) {
+          arr.splice(i, 1)
+        }
+      }
+    }
+
+    let parseEvent = function (e) {
+      let keys = {}
+      keys.keyCode = charKeyCodes[keyCodeChars[e.which]]
+      keys.meta = e.metaKey || false
+      keys.alt = e.altKey || false
+      keys.ctrl = e.ctrlKey || false
+      keys.shift = e.shiftKey || false
+      return keys
+    }
+
+    let match = function (k1, k2) {
+      return (
+        k1.keyCode === k2.keyCode &&
+        k1.ctrl === k2.ctrl &&
+        k1.alt === k2.alt &&
+        k1.meta === k2.meta &&
+        k1.shift === k2.shift
+      )
+    }
+
+    $document.bind('keydown', function (e) {
+      // Don't catch keys that were in inputs.
+      let $target = $(e.target)
+      if ($target.is('input[type="text"], textarea')) {
+        return
+      }
+
+      let eventKeys = parseEvent(e)
+      let shortcut
+      for (let i = shortcuts.length - 1; i >= 0; i--) {
+        shortcut = shortcuts[i]
+        if (match(eventKeys, shortcut.keys)) {
+          e.preventDefault()
+
+          // NOTE: the action is responsible for $scope.$apply!
+          shortcut.action()
+          return
+        }
+      }
+    })
+
+    return {
+      shortcuts: shortcuts,
+      register: function (shortcut) {
+        shortcut.keys = parseKeySet(shortcut.keySet)
+
+        // Be lenient.
+        if (!shortcut.keys) {
+          return
+        }
+
+        shortcuts.push(shortcut)
+        return shortcut
+      },
+      unregister: function (shortcut) {
+        overwriteWithout(shortcuts, shortcut)
+      },
+    }
+  },
+])
+
+app.directive('ngShortcut', [
+  '$parse',
+  'shortcuts',
+  function ($parse, shortcuts) {
+    let isSet = function (scope, expr) {
+      if (_.isUndefined(expr)) {
+        return false
+      }
+      if (expr === '') {
+        return true
+      }
+      return scope.$eval(expr)
+    }
+
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        let shortcutKeySets = scope.$eval(attrs.ngShortcut)
+        if (_.isUndefined(shortcutKeySets)) {
+          return
+        }
+        shortcutKeySets = shortcutKeySets.split('|')
+
+        let action = _.ignore
+        let eventAction = function (event) {
+          return function () {
+            element.trigger(event)
+          }
+        }
+        if (isSet(scope, attrs.ngShortcutClick)) {
+          action = eventAction('click')
+        } else if (isSet(scope, attrs.ngShortcutFocus)) {
+          action = eventAction('focus')
+        } else if (isSet(scope, attrs.ngShortcutFastClick)) {
+          // Since we are just triggering (not binding)
+          // this works just fine.
+          action = eventAction('click')
+        } else if (attrs.ngShortcutNavigate) {
+          let url = scope.$eval(attrs.ngShortcutNavigate)
+          action = function () {
+            navigation.redirect(url, true)
+          }
+        } else if (attrs.ngShortcutAction) {
+          let fn = $parse(attrs.ngShortcutAction)
+          action = function () {
+            scope.$apply(function () {
+              fn(scope)
+            })
+          }
+        } else if (attrs.ngShortcutActions) {
+          action = attrs.ngShortcutActions.split('|').map(function (fn) {
+            fn = $parse(fn)
+            return function () {
+              scope.$apply(function () {
+                fn(scope)
+              })
+            }
+          })
+        }
+        if (Array.isArray(action)) {
+          _.forEach(shortcutKeySets, function (keySet, idx) {
+            let shortcut = shortcuts.register({
+              keySet: keySet,
+              action: action[idx],
+              description: attrs.ngShortcutDescription || '',
+            })
+            scope.$on('$destroy', function () {
+              shortcuts.unregister(shortcut)
+            })
+          })
+        } else {
+          _.forEach(shortcutKeySets, function (keySet) {
+            let shortcut = shortcuts.register({
+              keySet: keySet,
+              action: action,
+              description: attrs.ngShortcutDescription || '',
+            })
+            scope.$on('$destroy', function () {
+              shortcuts.unregister(shortcut)
+            })
+          })
+        }
+      },
+    }
+  },
+])
