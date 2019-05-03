@@ -542,6 +542,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
 
   $scope.set_cur_tree = function (event, tree) {
     $scope.cur_tree = $scope.get_tree(tree.root_item_id)
+    $scope.init_sortable_event()
   }
   $scope.calc_cur_tree_checked_percent = function () {
     if ($scope.cur_tree === undefined) {
@@ -643,8 +644,8 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   }
   $scope.new_item_next = function (item) {
     $scope.gen_id -= 1
-    $scope.cur_tree_flat_data = $scope.cur_tree_flat_data.map(function (obj) {
-      if (obj.parent_id === item.parent_id && obj.order>item.order) {
+    $scope.cur_tree_flat_data.map(function (obj) {
+      if (obj.parent_id === item.parent_id && obj.order > item.order) {
         obj.order += 1
       }
       return obj
@@ -687,8 +688,20 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   $scope.dis_editable_item_self = function (item) {
     item.editable = false
   }
-  $scope.focus_item = function (item) {
-
+  $scope.init_sortable_event = function () {
+    UIkit.util.on('.js-sortable', 'moved', function (e) {
+      $scope.update_item_order(e.target)
+    })
+  }
+  $scope.update_item_order = function (parentNode) {
+    _.forEach(parentNode.children, function (node, index) {
+      let itemId = 1 * node.getAttribute('data-item-id')
+      let item = _.find($scope.cur_tree_flat_data, function (item) {
+        return item.id === itemId
+      })
+      item.order = index
+    })
+    $scope.cur_tree = $scope.transform_2_tree($scope.cur_tree_flat_data, true)
   }
 
   $scope.refresh_page = function () {

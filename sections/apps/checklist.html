@@ -106,20 +106,22 @@
             </nav>
 
             <form class="body">
-                <ul class="uk-list list-hover">
-                    <li ng-repeat="item in cur_tree" ng-include="'treeItem'"></li>
+                <ul class="uk-list list-hover js-sortable" uk-sortable>
+                    <li ng-repeat="item in cur_tree | orderBy: 'order'"
+                        data-item-id="{{ item.id }}" data-parent-id="{{ item.parent_id }}"
+                        ng-include="'treeItem'"></li>
                 </ul>
             </form>
 
             <script type="text/ng-template" id="treeItem">
-                <div class="uk-grid-small padding-mini" uk-grid>
+                <div class="uk-grid-small padding-mini" uk-grid ng-dblclick="item.editable = !item.editable">
                     <div class="uk-width-auto">
                         <div class="uk-inline">
                             <a uk-icon="icon: menu" type="button"></a>
                             <div class="menu-context" uk-dropdown="pos: right-bottom; mode: click">
                                 <ul class="uk-list">
-                                    <li><a href="#" ng-click="editable_item_self(item)">Enter Edit</a></li>
-                                    <li><a href="#" ng-click="dis_editable_item_self(item)">Esc Edit</a></li>
+                                    <li><a href="#" ng-click="item.editable = true">Enter Edit</a></li>
+                                    <li><a href="#" ng-click="item.editable = false">Esc Edit</a></li>
                                     <li><a href="#" ng-click="new_item_next(item)">New Next</a></li>
                                     <li><a href="#" ng-click="new_item_child(item)">New Child</a></li>
                                 </ul>
@@ -149,8 +151,11 @@
                         <div class="uk-inline w-125 uk-text-meta" ng-if="cur_tree_type==='checklist'" uk-tooltip="checked at" ng-bind="item.checked_at"></div>
                     </div>
                 </div>
-                <ul class="uk-list uk-list-large list-hover" ng-show="item.children && item.children.length > 0 && item.expand" >
-                    <li ng-repeat="item in item.children" ng-include="'treeItem'"></li>
+                <ul class="uk-list list-hover js-sortable" uk-sortable
+                    ng-show="item.children && item.children.length > 0 && item.expand" >
+                    <li ng-repeat="item in item.children | orderBy: 'order'"
+                        data-item-id="{{ item.id }}" data-parent-id="{{ item.parent_id }}"
+                        ng-include="'treeItem'"></li>
                 </ul>
             </script>
         </main>
