@@ -9,10 +9,11 @@ const UIkit = require('uikit')
 const Icons = require('uikit/dist/js/uikit-icons')
 const MyClass = require('./common/my-class.js')
 
+const ngCM = require('../assets/js/ng-context-menu.js')
 // loads the Icon plugin
 UIkit.use(Icons)
 
-let app = angular.module('Checklist', [])
+let app = angular.module('Checklist', ['ngContextMenu'])
 
 app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   $scope.user_info = undefined
@@ -21,6 +22,8 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   $scope.cur_tree_list = undefined
   $scope.cur_tree = undefined
   $scope.cur_tree_type = undefined
+
+  $scope.cur_right_click_item = undefined;
 
   $scope.search_keyword = ''
   $scope.loading = false
@@ -642,7 +645,12 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   $scope.toggle_expand = function (event, item) {
     item.expand = !item.expand
   }
+  $scope.toggle_editable = function (item) {
+    item = item || $scope.cur_right_click_item
+    item.editable = !item.editable;
+  };
   $scope.new_item_next = function (item) {
+    item = item || $scope.cur_right_click_item
     $scope.gen_id -= 1
     $scope.cur_tree_flat_data.map(function (obj) {
       if (obj.parent_id === item.parent_id && obj.order > item.order) {
@@ -666,6 +674,7 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
     $scope.cur_tree = $scope.transform_2_tree($scope.cur_tree_flat_data, true)
   }
   $scope.new_item_child = function (item) {
+    item = item || $scope.cur_right_click_item
     $scope.gen_id -= 1
     $scope.cur_tree_flat_data.push({
       id: $scope.gen_id,
@@ -681,12 +690,6 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
       expand: true
     })
     $scope.cur_tree = $scope.transform_2_tree($scope.cur_tree_flat_data, true)
-  }
-  $scope.editable_item_self = function (item) {
-    item.editable = true
-  }
-  $scope.dis_editable_item_self = function (item) {
-    item.editable = false
   }
   $scope.init_sortable_event = function () {
     UIkit.util.on('.js-sortable', 'moved', function (e) {
@@ -705,6 +708,10 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
   }
 
   $scope.refresh_page = function () {
+  }
+  $scope.show_context_menu = function (item){
+    $scope.cur_right_click_item = item
+    console.log(item)
   }
 
   // util
@@ -760,4 +767,17 @@ app.controller('ChecklistCtrl', function ($scope, $http, $sce, $timeout) {
 
   // init
   $scope.init()
+})
+
+// Rightclick directive
+app.directive('ngRightClick', function ($parse) {
+  return function (scope, element, attrs) {
+    let fn = $parse(attrs.ngRightClick)
+    element.bind('contextmenu', function (event) {
+      scope.$apply(function () {
+        event.preventDefault()
+        fn(scope, {$event:event})
+      })
+    })
+  }
 })

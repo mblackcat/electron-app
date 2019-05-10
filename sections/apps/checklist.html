@@ -114,19 +114,11 @@
             </form>
 
             <script type="text/ng-template" id="treeItem">
-                <div class="uk-grid-small padding-mini" uk-grid ng-dblclick="item.editable = !item.editable">
+                <div class="uk-grid-small padding-mini" uk-grid
+                     ng-right-click="show_context_menu(item)"
+                     context="context-menu"
+                     ng-dblclick="item.editable = !item.editable">
                     <div class="uk-width-auto">
-                        <div class="uk-inline">
-                            <a uk-icon="icon: menu" type="button"></a>
-                            <div class="menu-context" uk-dropdown="pos: right-bottom; mode: click">
-                                <ul class="uk-list">
-                                    <li><a href="#" ng-click="item.editable = true">Enter Edit</a></li>
-                                    <li><a href="#" ng-click="item.editable = false">Esc Edit</a></li>
-                                    <li><a href="#" ng-click="new_item_next(item)">New Next</a></li>
-                                    <li><a href="#" ng-click="new_item_child(item)">New Child</a></li>
-                                </ul>
-                            </div>
-                        </div>
                         <span uk-icon="icon: plus-circle"
                               ng-show="item.children && item.children.length >0 && !item.expand"
                               ng-click="toggle_expand($event, item)"></span>
@@ -158,6 +150,12 @@
                         ng-include="'treeItem'"></li>
                 </ul>
             </script>
+
+            <ul id="context-menu" class="uk-nav uk-list context-menu">
+                <li><a href="#" ng-click="toggle_editable(item)">Toggle Edit</a></li>
+                <li><a href="#" ng-click="new_item_next(item)">New Next</a></li>
+                <li><a href="#" ng-click="new_item_child(item)">New Child</a></li>
+            </ul>
         </main>
 
         <div class="full-screen block" ng-show="loading">
